@@ -1,6 +1,8 @@
 package com.br.mhm.libraryapi.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
@@ -31,7 +33,6 @@ public class Book {
     private String author;
 
     @NotNull
-    @Size(min = 1, max = 4)
     @Column(name = "publication_year")
     private Integer publicationYear;
 

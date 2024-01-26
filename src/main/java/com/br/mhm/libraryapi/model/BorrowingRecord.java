@@ -15,6 +15,7 @@ public class BorrowingRecord {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne
@@ -28,8 +29,19 @@ public class BorrowingRecord {
     private Patron patron;
 
     @NotNull
+    @Column(name = "borrowing_date")
     private LocalDate borrowingDate;
 
-    @NotNull
+    @Column(name = "return_date")
     private LocalDate returnDate;
+
+    public void setBookId(Long bookId) {
+        this.book = new Book();
+        this.book.setId(bookId);
+    }
+
+    public void setPatronId(Long patronId) {
+        this.patron = new Patron();
+        this.patron.setId(patronId);
+    }
 }
