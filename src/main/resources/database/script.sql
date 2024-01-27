@@ -24,3 +24,15 @@ CREATE TABLE BORROWING_RECORD (
     borrowing_date DATE NOT NULL,
     return_date DATE
 );
+
+CREATE TABLE LIBRARIAN (
+    id SERIAL PRIMARY KEY,
+    first_name VARCHAR(255) NOT NULL,
+    last_name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(100) NOT NULL,
+    role VARCHAR(50) NOT NULL
+);
+
+INSERT INTO LIBRARIAN (first_name, last_name, email, password, role)
+VALUES ('John', 'Doe', 'admin@test.com', '$2a$10$W9AOalJ1VAH2vdbjfw5jjeWJy90/6t.Wo0Wm3pqEIHP.V5HpauKWa', 'ADMIN');
