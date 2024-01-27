@@ -54,7 +54,7 @@ public class BorrowingRecordControllerTest {
 
         BorrowingRecord borrowingRecord = new BorrowingRecord(bookId, patronId, LocalDate.now());
 
-        when(borrowingRecordService.findByBookIdAndPatronId(bookId, patronId)).thenReturn(Optional.of(borrowingRecord));
+        when(borrowingRecordService.findByBookIdAndPatronIdAndReturnDateIsNull(bookId, patronId)).thenReturn(Optional.of(borrowingRecord));
         when(borrowingRecordService.returnABook(borrowingRecord)).thenAnswer(invocation -> {
             BorrowingRecord argument = invocation.getArgument(0);
 
@@ -77,7 +77,7 @@ public class BorrowingRecordControllerTest {
         Long bookId = 1L;
         Long patronId = 1L;
 
-        when(borrowingRecordService.findByBookIdAndPatronId(bookId, patronId)).thenReturn(Optional.empty());
+        when(borrowingRecordService.findByBookIdAndPatronIdAndReturnDateIsNull(bookId, patronId)).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/api/return/{bookId}/patron/{patronId}", bookId, patronId)
                         .contentType(MediaType.APPLICATION_JSON))

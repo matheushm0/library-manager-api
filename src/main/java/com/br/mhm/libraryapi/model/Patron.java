@@ -19,7 +19,7 @@ import java.util.List;
 public class Patron {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
 

@@ -17,7 +17,7 @@ import java.time.LocalDate;
 public class BorrowingRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue
     @Column(name = "id")
     private Long id;
 

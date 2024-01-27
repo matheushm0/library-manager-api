@@ -10,7 +10,7 @@ import java.util.Optional;
 @Repository
 public interface BorrowingRecordRepository extends JpaRepository<BorrowingRecord, Long> {
 
-    @Query("SELECT br FROM BorrowingRecord br WHERE br.book.id = ?1 AND br.patron.id = ?2")
-    public Optional<BorrowingRecord> findByBookIdAndPatronId(Long bookId, Long patronId);
+    @Query("SELECT br FROM BorrowingRecord br WHERE br.book.id = ?1 AND br.patron.id = ?2 AND br.returnDate IS NULL")
+    public Optional<BorrowingRecord> findByBookIdAndPatronIdAndReturnDateIsNull(Long bookId, Long patronId);
 
 }
