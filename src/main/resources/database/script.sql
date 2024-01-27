@@ -4,8 +4,7 @@ CREATE TABLE BOOK (
     title VARCHAR(255) NOT NULL,
     author VARCHAR(255) NOT NULL,
     publication_year INTEGER NOT NULL,
-    isbn VARCHAR(13) NOT NULL,
-    UNIQUE(isbn)
+    isbn VARCHAR(13) NOT NULL
 );
 
 -- Create the PATRON table

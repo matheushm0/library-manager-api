@@ -41,6 +41,8 @@ public class PatronController {
         if (patronService.findPatronById(id).isEmpty())
             return ResponseEntity.notFound().build();
 
+        patron.setId(id);
+
         Patron patronUpdated = patronService.updatePatron(patron);
 
         return ResponseEntity.ok(patronUpdated);

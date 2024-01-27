@@ -1,7 +1,6 @@
 package com.br.mhm.libraryapi.controller;
 
 import com.br.mhm.libraryapi.model.BorrowingRecord;
-import com.br.mhm.libraryapi.model.Patron;
 import com.br.mhm.libraryapi.service.BorrowingRecordService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

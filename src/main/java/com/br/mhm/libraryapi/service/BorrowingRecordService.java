@@ -2,6 +2,7 @@ package com.br.mhm.libraryapi.service;
 
 import com.br.mhm.libraryapi.model.BorrowingRecord;
 import com.br.mhm.libraryapi.repository.BorrowingRecordRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -20,6 +21,7 @@ public class BorrowingRecordService {
         return borrowingRecordRepository.findByBookIdAndPatronId(bookId, patronId);
     }
 
+    @Transactional
     public BorrowingRecord borrowABook(Long bookId, Long patronId) {
         BorrowingRecord borrowingRecord = new BorrowingRecord();
 
@@ -30,6 +32,7 @@ public class BorrowingRecordService {
         return borrowingRecordRepository.save(borrowingRecord);
     }
 
+    @Transactional
     public BorrowingRecord returnABook(BorrowingRecord borrowingRecord) {
 
         borrowingRecord.setReturnDate(LocalDate.now());

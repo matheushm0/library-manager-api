@@ -41,6 +41,8 @@ public class BookController {
         if (bookService.findBookById(id).isEmpty())
             return ResponseEntity.notFound().build();
 
+        book.setId(id);
+
         Book bookUpdated = bookService.updateBook(book);
 
         return ResponseEntity.ok(bookUpdated);

@@ -2,6 +2,7 @@ package com.br.mhm.libraryapi.service;
 
 import com.br.mhm.libraryapi.model.Patron;
 import com.br.mhm.libraryapi.repository.PatronRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,10 +25,12 @@ public class PatronService {
         return patronRepository.findById(id);
     }
 
+    @Transactional
     public Patron savePatron(Patron patron) {
         return patronRepository.save(patron);
     }
 
+    @Transactional
     public Patron updatePatron(Patron patron) {
         return patronRepository.save(patron);
     }

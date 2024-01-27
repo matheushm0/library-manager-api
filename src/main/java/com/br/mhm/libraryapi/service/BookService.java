@@ -2,6 +2,7 @@ package com.br.mhm.libraryapi.service;
 
 import com.br.mhm.libraryapi.model.Book;
 import com.br.mhm.libraryapi.repository.BookRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,10 +25,12 @@ public class BookService {
         return bookRepository.findById(id);
     }
 
+    @Transactional
     public Book saveBook(Book book) {
         return bookRepository.save(book);
     }
 
+    @Transactional
     public Book updateBook(Book book) {
         return bookRepository.save(book);
     }
