@@ -5,9 +5,13 @@ import com.br.mhm.libraryapi.service.BookService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/books")
@@ -32,12 +36,32 @@ public class BookController {
     }
 
     @PostMapping
-    public ResponseEntity<Book> saveBook(@RequestBody @Valid Book book) {
+    public ResponseEntity<?> saveBook(@RequestBody @Valid Book book, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         return new ResponseEntity<>(bookService.saveBook(book), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> updateBook(@PathVariable Long id, @RequestBody @Valid Book book) {
+    public ResponseEntity<?> updateBook(@PathVariable Long id, @RequestBody @Valid Book book, BindingResult result) {
+        if (result.hasErrors()) {
+            Map<String, String> errors = new HashMap<>();
+
+            for (FieldError error : result.getFieldErrors()) {
+                errors.put(error.getField(), error.getDefaultMessage());
+            }
+
+            return ResponseEntity.badRequest().body(errors);
+        }
+
         if (bookService.findBookById(id).isEmpty())
             return ResponseEntity.notFound().build();
 
