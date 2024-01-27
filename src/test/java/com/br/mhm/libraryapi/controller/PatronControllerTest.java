@@ -2,13 +2,16 @@ package com.br.mhm.libraryapi.controller;
 
 import com.br.mhm.libraryapi.model.Patron;
 import com.br.mhm.libraryapi.service.PatronService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import util.AuthenticationUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,10 +24,12 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(PatronController.class)
+@SpringBootTest
 public class PatronControllerTest {
 
     private final MockMvc mockMvc;
+
+    private String jwtToken;
 
     @MockBean
     private PatronService patronService;
@@ -36,12 +41,18 @@ public class PatronControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    @BeforeEach
+    void setUp() throws Exception {
+        jwtToken = AuthenticationUtils.authenticateAndGetAccessToken(mockMvc);
+    }
+
     @Test
     void findAllPatrons_shouldReturnListOfPatrons() throws Exception {
         List<Patron> patrons = Arrays.asList(PATRON_1, PATRON_2);
         when(patronService.findAllPatrons()).thenReturn(patrons);
 
         mockMvc.perform(get("/api/patrons")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -53,6 +64,7 @@ public class PatronControllerTest {
         when(patronService.findPatronById(patronId)).thenReturn(Optional.of(PATRON_1));
 
         mockMvc.perform(get("/api/patrons/{id}", patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
@@ -64,6 +76,7 @@ public class PatronControllerTest {
         when(patronService.findPatronById(patronId)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/patrons/{id}", patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -73,6 +86,7 @@ public class PatronControllerTest {
         when(patronService.savePatron(any(Patron.class))).thenReturn(PATRON_1);
 
         mockMvc.perform(post("/api/patrons")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"John Doe\",\"email\":\"johndoe@test.com\",\"phoneNumber\":\"123456789\",\"address\":\"123 Main St\"}"))
                 .andExpect(status().isCreated())
@@ -88,6 +102,7 @@ public class PatronControllerTest {
         when(patronService.updatePatron(any(Patron.class))).thenReturn(updatedPatron);
 
         mockMvc.perform(put("/api/patrons/{id}", patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Updated Name\",\"email\":\"updated@test.com\",\"phoneNumber\":\"987654321\",\"address\":\"Updated Address\"}"))
                 .andExpect(status().isOk())
@@ -104,6 +119,7 @@ public class PatronControllerTest {
         when(patronService.findPatronById(patronId)).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/api/patrons/{id}", patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"name\":\"Updated Name\",\"email\":\"updated@test.com\",\"phoneNumber\":\"987654321\",\"address\":\"Updated Address\"}"))
                 .andExpect(status().isNotFound());
@@ -115,6 +131,7 @@ public class PatronControllerTest {
         when(patronService.findPatronById(patronId)).thenReturn(Optional.of(PATRON_1));
 
         mockMvc.perform(delete("/api/patrons/{id}", patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -125,6 +142,7 @@ public class PatronControllerTest {
         when(patronService.findPatronById(patronId)).thenReturn(Optional.empty());
 
         mockMvc.perform(delete("/api/patrons/{id}", patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }

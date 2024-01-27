@@ -2,13 +2,16 @@ package com.br.mhm.libraryapi.controller;
 
 import com.br.mhm.libraryapi.model.Book;
 import com.br.mhm.libraryapi.service.BookService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import util.AuthenticationUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -21,9 +24,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(BookController.class)
+@SpringBootTest
 public class BookControllerTest {
     private final MockMvc mockMvc;
+
+    private String jwtToken;
 
     @MockBean
     private BookService bookService;
@@ -35,12 +40,18 @@ public class BookControllerTest {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
+    @BeforeEach
+    void setUp() throws Exception {
+        jwtToken = AuthenticationUtils.authenticateAndGetAccessToken(mockMvc);
+    }
+
     @Test
     void findAllBooks_shouldReturnListOfBooks() throws Exception {
         List<Book> books = Arrays.asList(BOOK_1, BOOK_2);
         when(bookService.findAllBooks()).thenReturn(books);
 
         mockMvc.perform(get("/api/books")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)));
@@ -52,6 +63,7 @@ public class BookControllerTest {
         when(bookService.findBookById(bookId)).thenReturn(Optional.of(BOOK_1));
 
         mockMvc.perform(get("/api/books/{id}", bookId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1L));
@@ -63,6 +75,7 @@ public class BookControllerTest {
         when(bookService.findBookById(bookId)).thenReturn(Optional.empty());
 
         mockMvc.perform(get("/api/books/{id}", bookId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }
@@ -72,6 +85,7 @@ public class BookControllerTest {
         when(bookService.saveBook(any(Book.class))).thenReturn(BOOK_1);
 
         mockMvc.perform(post("/api/books")
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"Amazing Spider-Man Omnibus, Vol. 1\",\"author\":\"Stan Lee\",\"publicationYear\":2007,\"isbn\":\"0785124020\"}"))
                 .andExpect(status().isCreated())
@@ -87,6 +101,7 @@ public class BookControllerTest {
         when(bookService.updateBook(any(Book.class))).thenReturn(updatedBook);
 
         mockMvc.perform(put("/api/books/{id}", bookId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"Updated Title\",\"author\":\"Updated Author\",\"publicationYear\":2024,\"isbn\":\"UpdatedISBN\"}"))
                 .andExpect(status().isOk())
@@ -103,6 +118,7 @@ public class BookControllerTest {
         when(bookService.findBookById(bookId)).thenReturn(Optional.empty());
 
         mockMvc.perform(put("/api/books/{id}", bookId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"title\":\"Updated Title\",\"author\":\"Updated Author\",\"publicationYear\":2022,\"isbn\":\"UpdatedISBN\"}"))
                 .andExpect(status().isNotFound());
@@ -114,6 +130,7 @@ public class BookControllerTest {
         when(bookService.findBookById(bookId)).thenReturn(Optional.of(BOOK_1));
 
         mockMvc.perform(delete("/api/books/{id}", bookId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -124,6 +141,7 @@ public class BookControllerTest {
         when(bookService.findBookById(bookId)).thenReturn(Optional.empty());
 
         mockMvc.perform(delete("/api/books/{id}", bookId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNotFound());
     }

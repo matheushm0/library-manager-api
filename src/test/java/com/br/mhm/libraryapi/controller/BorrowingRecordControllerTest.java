@@ -1,14 +1,19 @@
 package com.br.mhm.libraryapi.controller;
 
+import com.br.mhm.libraryapi.controller.auth.AuthenticationRequest;
 import com.br.mhm.libraryapi.model.BorrowingRecord;
 import com.br.mhm.libraryapi.service.BorrowingRecordService;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import util.AuthenticationUtils;
 
 import java.time.LocalDate;
 import java.util.Optional;
@@ -19,15 +24,21 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(BorrowingRecordController.class)
+@SpringBootTest
 public class BorrowingRecordControllerTest {
     private final MockMvc mockMvc;
+
+    private String jwtToken;
 
     @MockBean
     private BorrowingRecordService borrowingRecordService;
 
     public BorrowingRecordControllerTest(WebApplicationContext webApplicationContext) {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
+    }
+    @BeforeEach
+    void setUp() throws Exception {
+        jwtToken = AuthenticationUtils.authenticateAndGetAccessToken(mockMvc);
     }
 
     @Test
@@ -40,6 +51,7 @@ public class BorrowingRecordControllerTest {
         when(borrowingRecordService.borrowABook(bookId, patronId)).thenReturn(borrowingRecord);
 
         mockMvc.perform(post("/api/borrow/{bookId}/patron/{patronId}", bookId, patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.book.id").value(bookId))
@@ -64,6 +76,7 @@ public class BorrowingRecordControllerTest {
         });
 
         mockMvc.perform(put("/api/return/{bookId}/patron/{patronId}", bookId, patronId)
+                        .header("Authorization", "Bearer " + jwtToken)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.book.id").value(bookId))
